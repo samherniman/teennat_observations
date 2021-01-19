@@ -7,9 +7,20 @@ ppw_sf <- read_sf(here::here("data", "ppw_boundary_poly.shp"))
 ppw_obs <- download_ppw_observations(
   ppw_sf,
   project_name = "teennat-at-pepperwood-santa-rosa-ca"
-  )
+  ) %>% 
+  mutate(
+      latitude  = as.numeric(latitude),
+      longitude = as.numeric(longitude)
+  ) %>%
+      # filter(quality_grade == "research") %>%
+      filter(positional_accuracy < 100) %>%
+      mutate(species_guess = gsub("'", '', species_guess)) %>%
+      dplyr::select(-user_login) %>%
+      janitor::remove_empty(c("rows", "cols")) %>%
+      janitor::remove_constant(na.rm = TRUE, quiet = FALSE) %>%
+      mutate(species_guess = stringr::str_to_sentence(species_guess))
 
-saveRDS(ppw_obs, file = here::here("data", "tn_obs_sf.rds"))
+saveRDS(ppw_obs, file = here::here("data", "tn_obs_sf2.rds"))
 
 ggplot(data = ppw_obs) +
   geom_sf(

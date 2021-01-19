@@ -19,25 +19,24 @@ data <- readRDS(here::here("data", "tn_obs_sf.rds")) %>%
         ) %>% 
     dplyr::filter(positional_accuracy < 100)
 
-# Define UI for application that draws a histogram
+# Define UI for application
 ui <- fluidPage(
     mainPanel( 
-        #this will create a space for us to display our map
-        leafletOutput(outputId = "mymap"), #this allows me to put the checkmarks ontop of the map to allow people to view earthquake depth or overlay a heatmap
+        leafletOutput(outputId = "mymap"), 
         absolutePanel(top = 60, left = 20, 
                       checkboxInput("markers", "Species", FALSE),
                       checkboxInput("heat", "Heatmap", FALSE)
         )
     ))
 
-# Define server logic required to draw a histogram
+# Define server logic 
 server <- function(input, output, session) {
 
-    #define the color pallate for the magnitidue of the earthquake
+    # define colour pals
     pal <- colorNumeric(
         palette = c('gold', 'orange', 'dark orange', 'orange red', 'red', 'dark red'),
         domain = data$positional_accuracy)
-    #define the color of for the depth of the earquakes
+    
     pal2 <- colorFactor(
         palette = c('blue', 'yellow', 'red'),
         domain = data$species_guess
@@ -51,7 +50,7 @@ server <- function(input, output, session) {
             addCircles(data = data, lat = ~ latitude, lng = ~ longitude, weight = 1, radius = ~positional_accuracy, popup = ~as.character(positional_accuracy), label = ~as.character(paste0("Accuracy: ", sep = " ", positional_accuracy)), color = ~pal(positional_accuracy), fillOpacity = 0.5)
     })
     
-    #next we use the observe function to make the checkboxes dynamic. If you leave this part out you will see that the checkboxes, when clicked on the first time, display our filters...But if you then uncheck them they stay on. So we need to tell the server to update the map when the checkboxes are unchecked.  
+    # observe boxes make checkboxes
     
     observe({
     proxy <- leafletProxy("mymap", data = data)
