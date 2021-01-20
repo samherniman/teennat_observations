@@ -7,6 +7,7 @@ library(ggiraph)
 library(sf)
 library(patchwork)
 library(glue)
+library(gdtools)
 
 # specify a custom color palette with realistic looking colours
 cols <- c("0" = alpha("#c9fc97", 0.3), # grassland
@@ -15,18 +16,22 @@ cols <- c("0" = alpha("#c9fc97", 0.3), # grassland
           "3" = alpha("#014601", 0.4)  # conifer
 )
 
-ppw_boundary <- st_read(here::here("data", "ppw_boundary_poly.shp"))
-ppw_habitats <- st_read(here::here("data", "dissolved_habitats_ppw.shp")) 
+ppw_boundary <- st_read("data/ppw_boundary_poly.shp") 
+ppw_boundary <- st_set_crs(ppw_boundary, "+proj=longlat +datum=WGS84 +no_defs")
+
+ppw_habitats <- st_read("data/dissolved_habitats_ppw3.shp")
+ppw_habitats <- st_set_crs(ppw_habitats, "+proj=longlat +datum=WGS84 +no_defs")
 
 # ppw_habitats$area <- st_area(ppw_habitats)
-# grouped_sf2 <- 
+# grouped_sf2 <-
 #     ppw_habitats %>%
-#     group_by(z80) %>% 
-#     summarise(area = sum(area)) %>% 
-#     st_simplify()
-# st_write(
-#     grouped_sf,
-#     here::here("data", "dissolved_habitats_ppw.shp"),
+#     group_by(z80) %>%
+#     summarise(area = sum(area)) %>%
+#     st_simplify() %>% 
+#   st_transform(4326)
+# sf::st_write(
+#     grouped_sf2,
+#     here::here("data", "dissolved_habitats_ppw3.shp"),
 #     append = FALSE,
 #     overwrite = TRUE
 #     )
@@ -44,37 +49,21 @@ ppw_habitats <- st_read(here::here("data", "dissolved_habitats_ppw.shp"))
 #     remove_constant(na.rm = TRUE, quiet = FALSE) %>%
 #     mutate(species_guess = stringr::str_to_sentence(species_guess))
 
-data <- readRDS(here::here("data", "tn_obs_sf2.rds")) %>% 
-    dplyr::filter(iconic_taxon_name != "NA")
-
-# # ppw_map <- 
-#     ggplot(data = data) +
-#     # geom_sf_interactive(aes(tooltip = species_guess)) +
-#     geom_sf()+
-#     geom_sf(data = ppw_boundary, fill = "transparent")
-# 
-# # girafe(ggobj = ppw_map)
+data <- readRDS("data/tn_obs_sf2.rds")
+data <- st_set_crs(data, "+proj=longlat +datum=WGS84 +no_defs")
 
 # Define UI for application that draws a histogram
 ui <- 
     fluidPage(
-        # fillPage(
-        
-        # Application title
+      # Application title
         titlePanel("TeenNat observations"),
         
-        # Sidebar with a slider input for number of bins 
-        # fillPage(
-        # fixedPage(
         sidebarLayout(
-            # flowLayout(
             sidebarPanel(
                 "Each summer, a group of intrepid teenagers set out to catalog the fungi, plants, and animals of Pepperwood Preserve.
       Equipped with cameras, GPSs and iron wills they submit their findings to iNaturalist.org and produce a photography exhibition.
       Below, you can choose different taxa and explore when and where they were recorded across the landscape.",
                 selectInput(inputId = "taxa",
-                            # width = '10%',
-                            # multiple = TRUE,
                             label = "What taxa do you want?",
                             choices = unique(data$iconic_taxon_name),
                             selected = "Amphibia")
@@ -82,12 +71,9 @@ ui <-
             ),
             
             # Show the map
-            # fillCol(
             mainPanel(
                 girafeOutput("ppw_map")
             )
-            
-            # )
         ))
 
 

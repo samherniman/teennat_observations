@@ -5,8 +5,9 @@ account: samherniman
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3488106
-bundleId: 4115552
+bundleId: 4119909
 url: https://samherniman.shinyapps.io/teennat_observations/
-when: 1611040279.54664
+when: 1611117994.8539
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: teennat.observations2/heatmap.R

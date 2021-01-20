@@ -21,6 +21,11 @@ ppw_obs <- download_ppw_observations(
       mutate(species_guess = stringr::str_to_sentence(species_guess))
 
 saveRDS(ppw_obs, file = here::here("data", "tn_obs_sf2.rds"))
+vroom::vroom_write(ppw_obs, 
+                   delim = ",",
+                   append = FALSE,
+                   path = here::here("data", "tn_obs_sf2.csv")
+                   )
 
 ggplot(data = ppw_obs) +
   geom_sf(
