@@ -1,9 +1,15 @@
+# This is code used for downloading and cleaning the observations 
+# before they are ready for the shiny app
+
+# Load libraries
 library(rinat)
 library(sf)
 library(tidyverse)
 
+# Read in Pepperwood property boundary
 ppw_sf <- read_sf(here::here("data", "ppw_boundary_poly.shp"))
 
+# Download and clean TeenNat observations
 ppw_obs <- download_ppw_observations(
   ppw_sf,
   project_name = "teennat-at-pepperwood-santa-rosa-ca"
@@ -20,13 +26,15 @@ ppw_obs <- download_ppw_observations(
       janitor::remove_constant(na.rm = TRUE, quiet = FALSE) %>%
       mutate(species_guess = stringr::str_to_sentence(species_guess))
 
-saveRDS(ppw_obs, file = here::here("data", "tn_obs_sf2.rds"))
-vroom::vroom_write(ppw_obs, 
-                   delim = ",",
-                   append = FALSE,
-                   path = here::here("data", "tn_obs_sf2.csv")
-                   )
+# Save observations
+# saveRDS(ppw_obs, file = here::here("data", "tn_obs_sf2.rds"))
+# vroom::vroom_write(ppw_obs, 
+                   # delim = ",",
+                   # append = FALSE,
+                   # path = here::here("data", "tn_obs_sf2.csv")
+                   # )
 
+# Test that everything is alright by making a map
 ggplot(data = ppw_obs) +
   geom_sf(
     data     = ppw_sf,
