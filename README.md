@@ -6,4 +6,4 @@ This shiny app gives a broad summary of these observations.
 
 Please visit <https://samherniman.shinyapps.io/teennat_observations/> for a deployed version.
 
-![](Capture.PNG "Preview of the app")
+![](preview/preview.gif)
